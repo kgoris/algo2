@@ -67,57 +67,58 @@ public class Main {
     }
 
     public static Map<Coordonnees, Integer> cheminMap = new HashMap<>();
-    public static int findBestTrajets(int[][] echiquier, int n, int x, int y, int cpt, Coordonnees[] coordonneesVect, int nextCoord){
+
+    /*
+    Cet algorithme applique bien la programmation dynamique ascendante. D'après mes tests, il permet de trouver le
+    chemin permettant d'avoir le plus de points. Il trouve le plus de point. Cependant, je n'ai pas eu le temps d'optimiser
+    la solution pour qu'il retienne concrètement le chemin. Il faudrait le faire avec un array parce que la liste, comme elle
+    est référencée à l'extérieur de la méthode, retient toutes les positions parcourues.
+     */
+    public static int findBestTrajetsWithList(int[][] echiquier, int n, int x, int y, Integer cpt, List<Coordonnees> coordonneesList){
 
         cpt += echiquier[y][x];
         Coordonnees coordonnees = new Coordonnees(x, y, cpt);
-/*        if (cheminMap.containsKey(coordonnees)) {
+        coordonneesList.add(coordonnees);
+        if (cheminMap.containsKey(coordonnees)) {
             return cheminMap.get(coordonnees);
-        }*/
-        coordonneesVect[nextCoord] = coordonnees;
-        ++nextCoord;
+        }
+
+
         if(x == n-1 && y == n-1){
             cheminMap.put(coordonnees,cpt);
             return cpt;
         }else {
             if(x+1 <= n-1 && y+1 <= n-1){
-                int maxDiag = findBestTrajets(echiquier, n, x+1, y+1, cpt, coordonneesVect, nextCoord);
-                int maxDroite = findBestTrajets(echiquier, n, x+1, y, cpt, coordonneesVect, nextCoord);
-                int maxHaut = findBestTrajets(echiquier, n, x, y+1, cpt, coordonneesVect, nextCoord);
+                int maxDiag = findBestTrajetsWithList(echiquier, n, x+1, y+1, cpt, coordonneesList);
+                int maxDroite = findBestTrajetsWithList(echiquier, n, x+1, y, cpt, coordonneesList);
+                int maxHaut = findBestTrajetsWithList(echiquier, n, x, y+1, cpt, coordonneesList);
                 int maxOfMax = Math.max(maxDiag, Math.max(maxDroite, maxHaut));
+
                 cheminMap.put(coordonnees, maxOfMax);
                 return maxOfMax;
-                /*return Math.max(findBestTrajets(echiquier, n, x+1, y+1, cpt, coordonnees, nextCoord),
-                        Math.max(findBestTrajets(echiquier, n, x+1, y, cpt, coordonnees, nextCoord), );*/
             }else if(x+1 >=n-1 && y+1 <=n-1){
-                cpt = findBestTrajets(echiquier, n, x, y+1, cpt, coordonneesVect, nextCoord);
+                cpt = findBestTrajetsWithList(echiquier, n, x, y+1, cpt, coordonneesList);
                 cheminMap.put(coordonnees, cpt);
                 return cpt;
             }else if(y+1>=n-1 && x+1 <=n-1){
-                cpt = findBestTrajets(echiquier, n, x + 1, y , cpt, coordonneesVect, nextCoord);
+                cpt = findBestTrajetsWithList(echiquier, n, x + 1, y , cpt, coordonneesList);
                 cheminMap.put(coordonnees, cpt);
                 return cpt;
             }else{
                 return 0;
             }
         }
-
-
     }
     public static void main(String[] args) {
         int[][] echiquier = {{0, 8,1,9,4},{25,3,2,5,42},{18,38,8,2,1},{42,5,84,34,27},{2,5,8,1,54}};
         int res = countTrajets(5, 0, 0, 0);
         System.out.println(String.format("Resultat1: %d", res));
-        Coordonnees[] chemin = new Coordonnees[echiquier.length * echiquier.length];
-        String[] test = new String[4];
-        int res2 = findBestTrajets(echiquier, 5, 0, 0, 0,chemin , 0);
-        System.out.println(String.format("Resultat2: %d", res2));
-        System.out.println("Chemin:");
-        for(int i=0; i<chemin.length ; ++i){
-            if(chemin[i] == null){
-                break;
-            }
-            Coordonnees coordonnees = chemin[i];
+        cheminMap = new HashMap<>();
+        System.out.println("CheminList:");
+        List<Coordonnees> cheminList = new ArrayList<>();
+        Integer cpt = 0;
+        findBestTrajetsWithList(echiquier, 5, 0, 0, cpt,cheminList);
+        for(Coordonnees coordonnees: cheminList){
             System.out.println(String.format("%d %d %d", coordonnees.x, coordonnees.y, coordonnees.value));
         }
     }
