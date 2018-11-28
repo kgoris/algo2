@@ -1,124 +1,88 @@
-import java.util.*;
+/*TP5*/
 
 public class Main {
     /*
-    On considère ici qu'un trajet est un déplacement de case
+        EXERCICE 2
+        Compréhension de l'énoncé: le tableau contient des valeurs allant
+        de 0 à n-1.
+        Complexité de log n on divise le tableau en deux et on fait la récursion sur les
+        deux parties du tableau. Le travail effectué dans la condition d'arrêt est en O(1)
      */
-    public static int countTrajets(int n, Integer x, Integer y, int cpt){
-        if(n == 0){
-            return 0;
-        }else if(n==1){
-            return 0;
-        }else if(n==2){
-            return 3;
-        }else {
-            if(x+1 == n-1 && y+1 == n-1){
-                return cpt;
+    public static Integer[] tempArray;
+    public static Integer findDoublon(Integer[] array, int debut, int fin){
+        if(debut == fin){
+            //O(1)
+            if(tempArray[array[debut]] != null) {
+                return array[debut];
+            }else {
+                tempArray[array[debut]] = array[debut];
+                return null;
             }
-            if(x+1 <=n-1){
+        }else{
+            int milieu = (debut+fin) / 2;
+            //O(log n)
+            Integer res = findDoublon(array, debut, milieu);
+            Integer res2 = findDoublon(array, milieu + 1, fin);
 
-                cpt = countTrajets(n, x+1, y, ++cpt);
+            //O(1)
+            if(res != null){
+                return res;
+            }else if(res2 != null){
+                return res2;
+            }else {
+                return null;
             }
-            if(y+1<=n-1){
-
-                cpt = countTrajets(n, x, y + 1, ++cpt);
-            }
-            if(x+1 <= n-1 && y+1 <= n-1){
-
-                cpt = countTrajets(n, x+1, y+1, ++cpt);
-            }
-            return cpt;
-        }
-
-    }
-    static class Coordonnees{
-        int x;
-        int y;
-        int value;
-        public Coordonnees(int x, int y, int value){
-            this.x = x;
-            this.y = y;
-            this.value = value;
-        }
-
-        @Override
-        public String toString() {
-            return "Coordonnees{" +
-                    "x=" + x +
-                    ", y=" + y +
-                    ", value=" + value +
-                    '}';
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Coordonnees that = (Coordonnees) o;
-            return x == that.x &&
-                    y == that.y &&
-                    value == that.value;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(x, y, value);
         }
     }
 
-    public static Map<Coordonnees, Integer> cheminMap = new HashMap<>();
-    public static int findBestTrajets(int[][] echiquier, int n, int x, int y, int cpt, Coordonnees[] coordonneesVect, int nextCoord){
+    public static Integer[] minMax(Integer[] array, int debut, int fin) {
 
-        cpt += echiquier[y][x];
-        Coordonnees coordonnees = new Coordonnees(x, y, cpt);
-/*        if (cheminMap.containsKey(coordonnees)) {
-            return cheminMap.get(coordonnees);
-        }*/
-        coordonneesVect[nextCoord] = coordonnees;
-        ++nextCoord;
-        if(x == n-1 && y == n-1){
-            cheminMap.put(coordonnees,cpt);
-            return cpt;
-        }else {
-            if(x+1 <= n-1 && y+1 <= n-1){
-                int maxDiag = findBestTrajets(echiquier, n, x+1, y+1, cpt, coordonneesVect, nextCoord);
-                int maxDroite = findBestTrajets(echiquier, n, x+1, y, cpt, coordonneesVect, nextCoord);
-                int maxHaut = findBestTrajets(echiquier, n, x, y+1, cpt, coordonneesVect, nextCoord);
-                int maxOfMax = Math.max(maxDiag, Math.max(maxDroite, maxHaut));
-                cheminMap.put(coordonnees, maxOfMax);
-                return maxOfMax;
-                /*return Math.max(findBestTrajets(echiquier, n, x+1, y+1, cpt, coordonnees, nextCoord),
-                        Math.max(findBestTrajets(echiquier, n, x+1, y, cpt, coordonnees, nextCoord), );*/
-            }else if(x+1 >=n-1 && y+1 <=n-1){
-                cpt = findBestTrajets(echiquier, n, x, y+1, cpt, coordonneesVect, nextCoord);
-                cheminMap.put(coordonnees, cpt);
-                return cpt;
-            }else if(y+1>=n-1 && x+1 <=n-1){
-                cpt = findBestTrajets(echiquier, n, x + 1, y , cpt, coordonneesVect, nextCoord);
-                cheminMap.put(coordonnees, cpt);
-                return cpt;
-            }else{
-                return 0;
+        if (debut == fin) {
+            System.out.println("comparaison");
+            Integer[] resMinMax = {array[debut], array[debut]};
+            return resMinMax;
+        } else {
+            int milieu = (debut + fin) / 2;
+            //O(log n)
+            Integer[] res = minMax(array, debut, milieu);
+            Integer[] res2 = minMax(array, milieu + 1, fin);
+            Integer[] resMinMax = new Integer[2];
+            if (res[0] < res2[0]) {
+                System.out.println("comparaison");
+                resMinMax[0] = res[0];
+            } else {
+                resMinMax[0] = res2[0];
             }
+            if (res[1] > res2[1]) {
+                System.out.println("comparaison");
+                resMinMax[1] = res[1];
+            } else {
+                resMinMax[1] = res2[1];
+            }
+            return resMinMax;
         }
-
+    }
+    /*
+    On considère que n est compris entre 0 et la taille de l'array le plus grand
+    entre les deux array
+     */
+    public static Integer rangN(Integer[] array1, Integer[] array2, int n, int debut, int fin){
 
     }
+
     public static void main(String[] args) {
-        int[][] echiquier = {{0, 8,1,9,4},{25,3,2,5,42},{18,38,8,2,1},{42,5,84,34,27},{2,5,8,1,54}};
-        int res = countTrajets(5, 0, 0, 0);
-        System.out.println(String.format("Resultat1: %d", res));
-        Coordonnees[] chemin = new Coordonnees[echiquier.length * echiquier.length];
-        String[] test = new String[4];
-        int res2 = findBestTrajets(echiquier, 5, 0, 0, 0,chemin , 0);
-        System.out.println(String.format("Resultat2: %d", res2));
-        System.out.println("Chemin:");
-        for(int i=0; i<chemin.length ; ++i){
-            if(chemin[i] == null){
-                break;
-            }
-            Coordonnees coordonnees = chemin[i];
-            System.out.println(String.format("%d %d %d", coordonnees.x, coordonnees.y, coordonnees.value));
-        }
+        Integer[] exempleArray = {0, 1, 2, 3, 3, 4, 5, 6, 7, 8};
+        tempArray = new Integer[exempleArray.length];
+        Integer res = findDoublon(exempleArray, 0, exempleArray.length -1);
+        System.out.println("exercice2: Res " + res);
+
+        Integer[] minMaxArray = {3, 9, 5, 0, 12, 14, 1, 2};
+        Integer[] resMinMax = minMax(minMaxArray, 0, minMaxArray.length -1);
+        System.out.println(String.format("exercice3: min %d max %d", resMinMax[0], resMinMax[1]));
+
+        Integer[] array1 = {-4, -1, 5, 6, 12, 32, 65, 75, 88, 90};
+        Integer[] array2 = {0, 4, 7, 8, 9, 13, 14, 17};
+        Integer nieme = rangN(array1, array2, 9, 0, array1.length + array2.length);
+        System.out.println(String.format("exercice6: min %d max %d", resMinMax[0], resMinMax[1]));
     }
 }
