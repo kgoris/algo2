@@ -35,10 +35,12 @@ public class Main {
         }
     }
 
+    /*
+    EXERCICE 4
+     */
     public static Integer[] minMax(Integer[] array, int debut, int fin) {
 
         if (debut == fin) {
-            System.out.println("comparaison");
             Integer[] resMinMax = {array[debut], array[debut]};
             return resMinMax;
         } else {
@@ -48,13 +50,11 @@ public class Main {
             Integer[] res2 = minMax(array, milieu + 1, fin);
             Integer[] resMinMax = new Integer[2];
             if (res[0] < res2[0]) {
-                System.out.println("comparaison");
                 resMinMax[0] = res[0];
             } else {
                 resMinMax[0] = res2[0];
             }
             if (res[1] > res2[1]) {
-                System.out.println("comparaison");
                 resMinMax[1] = res[1];
             } else {
                 resMinMax[1] = res2[1];
@@ -63,11 +63,42 @@ public class Main {
         }
     }
     /*
-    On considère que n est compris entre 0 et la taille de l'array le plus grand
-    entre les deux array
+    EXERCICE 7
+    Complexité n log n
      */
-    public static Integer rangN(Integer[] array1, Integer[] array2, int n, int debut, int fin){
+    public static Integer maxSum(Integer[] array, int debut, int fin){
+        if(debut == fin){
+            return array[debut];
+        }
 
+        //log n
+        Integer res1 = maxSum(array, debut, debut );
+        Integer res2 = null;
+        if(debut < fin) {
+            res2 = maxSum(array, debut + 1, fin);
+        }
+
+        Integer maxRes = null;
+        if(res1 < res2){
+            maxRes = res2;
+        }else{
+            maxRes = res1;
+        }
+
+        int sum = 0;
+        int tmp = 0;
+        //pire cas: on parcourt n-1 éléments -> O(n)
+        for(int i = debut ; i<fin; ++i){
+            tmp+= array[i];
+            if(sum < tmp){
+                sum = tmp;
+            }
+        }
+        if(maxRes < sum){
+            return sum;
+        }else{
+            return maxRes;
+        }
     }
 
     public static void main(String[] args) {
@@ -78,11 +109,10 @@ public class Main {
 
         Integer[] minMaxArray = {3, 9, 5, 0, 12, 14, 1, 2};
         Integer[] resMinMax = minMax(minMaxArray, 0, minMaxArray.length -1);
-        System.out.println(String.format("exercice3: min %d max %d", resMinMax[0], resMinMax[1]));
+        System.out.println(String.format("exercice4: min %d max %d", resMinMax[0], resMinMax[1]));
 
-        Integer[] array1 = {-4, -1, 5, 6, 12, 32, 65, 75, 88, 90};
-        Integer[] array2 = {0, 4, 7, 8, 9, 13, 14, 17};
-        Integer nieme = rangN(array1, array2, 9, 0, array1.length + array2.length);
-        System.out.println(String.format("exercice6: min %d max %d", resMinMax[0], resMinMax[1]));
+        Integer[] array1 = {3, -4, 6, 2, -5, 9, 8, -9, -2, 8};
+        int max = maxSum(array1, 0, array1.length - 1);
+        System.out.println(String.format("exercice7: max %d", max));
     }
 }
